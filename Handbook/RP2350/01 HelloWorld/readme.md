@@ -1,8 +1,4 @@
-这是一个为您准备的 `README.md` 文件。它采用了 GitHub 常见的双语（英文+中文）排版风格，专业且易读。
 
-你可以直接复制下面的内容保存为 `README.md`。
-
----
 
 # RP2350 Serial Matrix Rain / RP2350 串口数字雨
 
