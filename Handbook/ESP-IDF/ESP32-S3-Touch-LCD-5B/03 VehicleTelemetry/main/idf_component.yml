@@ -1,0 +1,12 @@
+# Managed-component dependencies for the LVGL dashboard.
+#
+# LVGL v9 (current major) + Espressif's official esp_lvgl_port glue.
+# The IDF component manager resolves the newest versions that also satisfy
+# this project's ESP-IDF (v5.2.7) constraint, so the exact landed version of
+# esp_lvgl_port may be older than the upstream "latest" (2.8) — its RGB-panel
+# add API is verified against the fetched header before use (see main.c).
+dependencies:
+  # esp_lvgl_port 2.8 references LV_COLOR_FORMAT_RGB565_SWAPPED, added in LVGL
+  # 9.3 - so lvgl must be >= 9.3 (a ~9.2 pin makes the port fail to compile).
+  lvgl/lvgl: "^9.3"
+  espressif/esp_lvgl_port: "^2.0"

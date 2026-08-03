@@ -1,0 +1,20 @@
+# sdkconfig.defaults for ESP32-S3-Touch-LCD-5B "Hello World" on the LCD.
+#
+# The RGB framebuffer (1024x600 x 2 bytes ~= 1.17 MB) must live in the 8 MB
+# octal PSRAM, so PSRAM has to be enabled. These values mirror Espressif's
+# official rgb_panel example (sdkconfig.defaults.esp32s3) for the same chip.
+
+# --- PSRAM (WROOM-1-N16R8 = 8 MB octal) ---
+CONFIG_SPIRAM=y
+CONFIG_SPIRAM_MODE_OCT=y
+CONFIG_SPIRAM_SPEED_80M=y
+# Let EDMA fetch instructions/rodata from PSRAM - helps sustain a higher PCLK
+# when the frame buffer is in PSRAM.
+CONFIG_SPIRAM_FETCH_INSTRUCTIONS=y
+CONFIG_SPIRAM_RODATA=y
+
+# --- Flash: 16 MB on the WROOM-1-N16R8 module (default target assumes 2 MB) ---
+CONFIG_ESPTOOLPY_FLASHSIZE_16MB=y
+
+# --- FreeRTOS tick = 1 kHz (finer vTaskDelay resolution) ---
+CONFIG_FREERTOS_HZ=1000

@@ -1,0 +1,45 @@
+# sdkconfig.defaults for ESP32-S3-Touch-LCD-5B "Hello World" on the LCD.
+#
+# The RGB framebuffer (1024x600 x 2 bytes ~= 1.17 MB) must live in the 8 MB
+# octal PSRAM, so PSRAM has to be enabled. These values mirror Espressif's
+# official rgb_panel example (sdkconfig.defaults.esp32s3) for the same chip.
+
+# --- PSRAM (WROOM-1-N16R8 = 8 MB octal) ---
+CONFIG_SPIRAM=y
+CONFIG_SPIRAM_MODE_OCT=y
+CONFIG_SPIRAM_SPEED_80M=y
+# Let EDMA fetch instructions/rodata from PSRAM - helps sustain a higher PCLK
+# when the frame buffer is in PSRAM.
+CONFIG_SPIRAM_FETCH_INSTRUCTIONS=y
+CONFIG_SPIRAM_RODATA=y
+# Let malloc() hand out PSRAM for large allocations, so LVGL's render buffers
+# (after CONFIG_LV_USE_CLIB_MALLOC) can live in the 7.5 MB PSRAM heap.
+CONFIG_SPIRAM_USE_MALLOC=y
+
+# --- Flash: 16 MB on the WROOM-1-N16R8 module (default target assumes 2 MB) ---
+CONFIG_ESPTOOLPY_FLASHSIZE_16MB=y
+
+# --- FreeRTOS tick = 1 kHz (finer vTaskDelay resolution) ---
+CONFIG_FREERTOS_HZ=1000
+
+# --- LVGL ---
+# RGB565 to match the ST7262 parallel panel + esp_lcd PSRAM framebuffer.
+CONFIG_LV_COLOR_DEPTH_16=y
+# NO byte-swap: the RGB panel is parallel (16 data lines), not SPI. The 16-bit
+# pixel maps directly to the data bus; swapping bytes would corrupt colours.
+# (LV_COLOR_16_SWAP is for SPI panels that clock out MSB-first.)
+# CONFIG_LV_COLOR_16_SWAP is not set
+# Use the C library malloc (not LVGL's built-in 64 KB TLSF pool). Rendering a
+# 1024x600 screen needs ~MB-sized draw buffers that don't fit in the tiny built-
+# in pool; with the PSRAM-backed heap below, lv_malloc goes to system malloc.
+CONFIG_LV_USE_CLIB_MALLOC=y
+# Fonts used by the dashboard (tick labels + title + big central readout).
+CONFIG_LV_FONT_MONTSERRAT_14=y
+CONFIG_LV_FONT_MONTSERRAT_24=y
+CONFIG_LV_FONT_MONTSERRAT_48=y
+# FPS readout: NOT using LVGL's built-in sysmon/perf monitor here. In LVGL v9
+# LV_USE_PERF_MONITOR is a sub-option of LV_USE_SYSMON (so a bare
+# CONFIG_LV_USE_PERF_MONITOR=y gets silently dropped - it never compiled in,
+# which is why no overlay appeared). The dashboard instead counts
+# LV_EVENT_REFR_READY itself and draws its own top-left "FPS: nn" label - see
+# lvgl_dashboard.c. That needs no extra Kconfig symbols, so nothing to set here.
