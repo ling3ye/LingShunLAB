@@ -5,7 +5,7 @@ import sys
 import json
 
 # ==================== 配置区 ====================
-CSV_PATH = "/Users/shawn/.openclaw/workspace/skills/ssq-lstm-predict/ssq.csv"
+CSV_PATH = os.path.expanduser("~/openclaw/workspace/skills/ssq-lstm-predict/ssq.csv")
 
 # ==================== 1. 读取 + 强制最旧→最新 ====================
 def load_data():

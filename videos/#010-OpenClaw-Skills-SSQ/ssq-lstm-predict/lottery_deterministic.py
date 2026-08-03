@@ -6,7 +6,7 @@ import json
 from collections import Counter, defaultdict
 
 # ==================== 配置区 ====================
-CSV_PATH = "/Users/shawn/.openclaw/workspace/skills/ssq-lstm-predict/ssq.csv"
+CSV_PATH = os.path.expanduser("~/openclaw/workspace/skills/ssq-lstm-predict/ssq.csv")
 RANDOM_SEED = 42  # 固定随机种子，确保结果可重现
 
 np.random.seed(RANDOM_SEED)
