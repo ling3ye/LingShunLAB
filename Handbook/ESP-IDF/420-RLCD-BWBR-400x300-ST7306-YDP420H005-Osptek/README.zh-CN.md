@@ -167,6 +167,8 @@ ESP-IDF 显存采用竖屏 **300 × 400**，初始化时设置 `MADCTL (0x36) = 
 
 使用 Arduino IDE 打开 [`ArduinoIDE/esp32s3-st7306-bringup/esp32s3-st7306-bringup.ino`](ArduinoIDE/esp32s3-st7306-bringup/esp32s3-st7306-bringup.ino)，并选择匹配的 ESP32-S3 开发板配置。
 
+实测环境为 ESP32-S3 N16R8 开发板、Arduino IDE v2.3.8、esp32 Arduino Core v3.3.8。菜单值仅作参考，不同开发板按实际硬件调整：`ESP32S3 Dev Module` / `USB CDC On Boot = Enabled` / `CPU 240MHz` / `Flash Mode QIO 80MHz` / `Flash Size 4MB` / `PSRAM Disabled` / `Upload Speed 921600` / `USB Mode = Hardware CDC and JTAG`。其中 `Board` 架构必须是 esp32s3，`USB CDC On Boot` 与 `Upload Mode` 取决于 USB 口是原生 USB 还是板载串口芯片，`Flash Size` 与 `PSRAM` 取决于模组。这套菜单没有用满 N16R8 的 16MB Flash 和 8MB PSRAM，示例程序不受影响；要用满容量需自行调整 Flash Size、PSRAM 与分区表，未在此验证。
+
 - 默认 `PINSET = 1`，使用上面的接线表。
 - `PINSET = 0` 选择另一组转接板引脚：CS → GPIO38、RESET → GPIO41、SCLK → GPIO39、MOSI → GPIO42、RS/D/C → GPIO40。
 - 程序运行 8 个测试页，SPI 时钟为 20MHz，显存按每块 1500 字节发送。

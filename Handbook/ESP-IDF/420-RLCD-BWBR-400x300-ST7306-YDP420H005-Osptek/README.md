@@ -167,6 +167,8 @@ To check colors quickly, set `DEMO_ONLY_COLOR_PAGES` to `1` in `main/main.c`. Th
 
 Open [`ArduinoIDE/esp32s3-st7306-bringup/esp32s3-st7306-bringup.ino`](ArduinoIDE/esp32s3-st7306-bringup/esp32s3-st7306-bringup.ino) in Arduino IDE with an ESP32-S3 board configuration.
 
+Tested with an ESP32-S3 N16R8 board, Arduino IDE v2.3.8, and esp32 Arduino Core v3.3.8. The menu values below are reference only; adjust them for your own board: `ESP32S3 Dev Module` / `USB CDC On Boot = Enabled` / `CPU 240MHz` / `Flash Mode QIO 80MHz` / `Flash Size 4MB` / `PSRAM Disabled` / `Upload Speed 921600` / `USB Mode = Hardware CDC and JTAG`. `Board` must target esp32s3; `USB CDC On Boot` and `Upload Mode` depend on whether the port is native USB or a USB-serial bridge; `Flash Size` and `PSRAM` depend on the module. This does not use the full 16MB flash or 8MB PSRAM of an N16R8 board; the sketch is unaffected, but using the full capacity requires changing Flash Size, PSRAM, and the partition scheme, which is not verified here.
+
 - `PINSET = 1` is the default and uses the wiring table above.
 - `PINSET = 0` selects the alternate adapter mapping: CS → GPIO38, RESET → GPIO41, SCLK → GPIO39, MOSI → GPIO42, and RS/D/C → GPIO40.
 - The sketch runs eight test pages, uses a 20 MHz SPI clock, and transmits the framebuffer in 1500-byte chunks.

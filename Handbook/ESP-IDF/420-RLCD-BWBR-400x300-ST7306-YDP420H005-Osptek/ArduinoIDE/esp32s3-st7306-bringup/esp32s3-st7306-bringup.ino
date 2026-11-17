@@ -1,5 +1,17 @@
 /*
- * ESP32-S3 + OSPTEK 4.2" 300x400 黑白红 LCD（ST7306 · SPI）测试套件 v7.3
+ * ESP32-S3 + OSPTEK 4.2" 300x400 黑白红 LCD（ST7306 · SPI）测试套件 v7.5
+ *
+ * v7.5 改动（删除无效的状态回读）：
+ *   用 esp32s3-st7306-readback-test 实测：SPI.begin(...,-1,MOSI,-1) 时 MISO 未接，
+ *   transfer() 恒返回 0xFF，与寄存器地址、CS 是否选中都无关；把数据脚切成输入后
+ *   用上拉/下拉各读一遍，结果是全 1 / 全 0，说明屏幕在读命令期间没有驱动数据线。
+ *   结论：这块模组在当前接法下读不回寄存器，原来的 [DIAG] 0x09 日志只会误报 OK，
+ *   已整段删除。判断链路好坏请看屏幕是否正常显示，不要看串口。
+ *
+ * v7.4 改动（修复 PAGE_CYAN 全屏填充）：
+ *   实机对比 0x33 / 0x55 / 逐点 writePoint(C_CYAN)：
+ *   0x33 与逐点写入都显示整屏青（视觉偏蓝），0x55 显示间隔条纹。
+ *   逐点写入后的 30000 字节显存也全部为 0x33，故将 PAGE_CYAN 改为 0x33。
  *
  * v7.3 改动（整屏再旋转 180°）：
  *   现场演示时画面方向与原映射相反，需要整屏转 180°。
@@ -101,19 +113,15 @@ static void lcd_param(uint8_t p) {
   digitalWrite(LCD_CS, HIGH);
 }
 
-// 读 ST7306 寄存器（先写 0x00 空字节，再读真实值）
-static uint8_t lcd_read_reg(uint8_t reg) {
-  spi_begin();
-  digitalWrite(LCD_CS, LOW);
-  digitalWrite(LCD_RS, LOW);
-  SPI.transfer(reg);          // 发送寄存器地址
-  digitalWrite(LCD_RS, HIGH);
-  SPI.transfer(0x00);         // 空写时钟，丢掉
-  uint8_t val = SPI.transfer(0x00);  // 读真实值
-  digitalWrite(LCD_CS, HIGH);
-  SPI.endTransaction();
-  return val;
-}
+// 这里原来有个 lcd_read_reg()，用 SPI.transfer() 读 0x09 状态寄存器。
+// v7.5 删掉的原因（实测，不是推测）：
+//   1) SPI.begin(LCD_CLK, -1, LCD_MOSI, -1) 的第二个参数是 MISO，传 -1 表示没接，
+//      外设没有输入脚可采，transfer() 恒返回 0xFF。
+//   2) 换成 0x04 / 0x0A / 0xDA / 0xA5 任意寄存器，或者把 CS 一直拉高根本
+//      不选中屏幕，读回的还是 0xFF —— 说明这个值和屏幕没有任何关系。
+//   3) 改成半双工（把 MOSI 脚切成输入、手动打时钟）再读，内部上拉得到全 1、
+//      内部下拉得到全 0，说明读命令期间屏幕没有驱动数据线，读不回来。
+// 所以这块模组在当前接法下没有可用的链路自检。判断接没接好，就看屏幕显不显示。
 
 // ---------------- 初始化序列（与 IDF 逐条一致）----------------
 static void st7306_init(void) {
@@ -458,7 +466,7 @@ static void render_page(int page, uint32_t frame, uint32_t elapsed_ms) {
         break;
     }
     case PAGE_CYAN:
-        memset(fb, 0x55, BUF_LEN);   // 0x55 = 每个合并像素 01 -> 全屏青
+        memset(fb, 0x33, BUF_LEN);   // 0x33 = 每个合并像素 01 -> 全屏青
         draw_text(85, 130, "CYAN FULL", 5, C_BLACK);   // 9*5*6=270 宽，x=(400-270)/2
         break;
     default:
@@ -482,7 +490,7 @@ void setup() {
     Serial.begin(115200);
     delay(300);
     Serial.println();
-    Serial.println("=== ST7306 test suite v7.3 (ROT180) ===");
+    Serial.println("=== ST7306 test suite v7.5 (ROT180) ===");
 
     fb = (uint8_t *)heap_caps_malloc(BUF_LEN, MALLOC_CAP_DMA | MALLOC_CAP_8BIT);
     if (!fb) fb = (uint8_t *)malloc(BUF_LEN);
@@ -493,9 +501,9 @@ void setup() {
     Serial.println("[..] 初始化 ST7306 ...");
     st7306_init();
 
-    uint8_t status = lcd_read_reg(0x09);
-    Serial.printf("[DIAG] ST7306 0x09 = 0x%02X %s\n",
-                status, status != 0x00 ? "OK" : "=0，链路不通");
+    // 这里原来会读一次 0x09 状态寄存器并打印 OK / 链路不通。
+    // v7.5 删除：MISO 没接，读回的值恒为 0xFF，和屏幕状态无关，只会误报。
+    // 链路是否正常，看屏幕有没有正常出画面。
 
     if (DIAG_MODE) {
         Serial.println("[DIAG] 画 50x50 方块 at (50,50)，观察屏幕...");
