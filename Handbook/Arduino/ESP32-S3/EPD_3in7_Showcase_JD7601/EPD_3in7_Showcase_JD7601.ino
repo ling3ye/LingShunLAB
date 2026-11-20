@@ -1,5 +1,5 @@
 /*
- * EPD_3in7_Showcase — Hello + 英文日程 + 一张照片
+ * EPD_3in7_Showcase_JD7601 — Hello + 英文日程 + 一张照片
  * OSPTEK 3.7" E6 480x720 / JD7601 / ESP32-S3
  *
  * 新手只需修改本文件。文字使用 Adafruit GFX 自带字体，不需要制作字库。

@@ -1,4 +1,4 @@
-# EPD_3in7_Showcase
+# EPD_3in7_Showcase_JD7601
 
 适合新手的 Arduino IDE 示例：**Hello → 英文日程 → 一张照片**，播放一次后停在照片。
 
@@ -7,7 +7,7 @@
 ## 只需三步
 
 1. 在 Arduino IDE 的**库管理器**搜索并安装 **Adafruit GFX Library**，同时安装其提示的依赖库。
-2. 下载**整个 `EPD_3in7_Showcase` 文件夹**，用 Arduino IDE 打开 `EPD_3in7_Showcase.ino`。
+2. 下载**整个 `EPD_3in7_Showcase_JD7601` 文件夹**，用 Arduino IDE 打开 `EPD_3in7_Showcase_JD7601.ino`。
 3. 开发板选择 **ESP32S3 Dev Module**，按下方接线，编译上传。串口为 **115200**。
 
 不要只复制 `.ino`：`photo_data.h`、`EPD037A02_GFX.h` 和 `EPD037A02_GFX.cpp` 也必须与主文件放在同一目录。无需制作字体、运行 Python、上传文件系统或复制库到系统目录。
@@ -39,8 +39,8 @@
 ## 文件结构
 
 ```text
-EPD_3in7_Showcase/
-├── EPD_3in7_Showcase.ino     # 新手只需要看这里：文字、日程、三屏流程
+EPD_3in7_Showcase_JD7601/
+├── EPD_3in7_Showcase_JD7601.ino  # 新手只需要看这里：文字、日程、三屏流程
 ├── photo_data.h              # 已转换的照片帧，不是 JPG/PNG
 ├── EPD037A02_GFX.h           # 面板驱动接口
 ├── EPD037A02_GFX.cpp         # SPI、面板帧格式和照片发送

@@ -55,7 +55,7 @@ enum EPDColor : uint8_t {
  *   display.display();                     // 推屏 + 全刷（15~25 s）
  *
  * 注意：颜色是 4bit 索引色（只有 6 种），不是 RGB565。传 ST77XX_RED 之类
- * 的 16 位色值不会报错，但只有低 3 位参与取色，结果没有意义。
+ * 的 16 位色值不会报错，但只有低 4 位参与取色（color & 0x0F），结果没有意义。
  */
 class EPD037A02_GFX : public Adafruit_GFX {
  public:

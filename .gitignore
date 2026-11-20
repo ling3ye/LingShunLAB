@@ -53,3 +53,5 @@ env/
 *~
 # NOTE: .vscode/ and .devcontainer/ are intentionally NOT ignored —
 # their portable configs are committed to help others open/build.
+
+.*/
